@@ -1,0 +1,28 @@
+from pathlib import Path
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
+DATA_DIR = PROJECT_ROOT / "data"
+RAW_DATA_DIR = DATA_DIR / "raw"
+PROCESSED_DATA_DIR = DATA_DIR / "processed"
+
+REPORTS_DIR = PROJECT_ROOT / "reports"
+RESULTS_DIR = PROJECT_ROOT / "results"
+MODELS_DIR = RESULTS_DIR / "models"
+METRICS_DIR = RESULTS_DIR / "metrics"
+FIGURES_DIR = RESULTS_DIR / "figures"
+
+DATASET_EXPLORATION_DIR = REPORTS_DIR / "01_dataset_exploration"
+MERGED_RAW_DATA_PATH = DATASET_EXPLORATION_DIR / "cicids2017_merged_raw.csv"
+
+RANDOM_STATE = 42
+TEST_SIZE = 0.2
+
+LABEL_COLUMN = "Label"
+SOURCE_FILE_COLUMN = "source_file"
+
+SELECTED_FEATURES_DIR = RESULTS_DIR / "selected_features"
+
+CORRELATION_THRESHOLD = 0.95
+TOP_N_FEATURES = 30
