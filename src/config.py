@@ -22,6 +22,8 @@ TEST_SIZE = 0.2
 LABEL_COLUMN = "Label"
 SOURCE_FILE_COLUMN = "source_file"
 
+FILE_HOLDOUT_FILENAME = "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"
+
 SELECTED_FEATURES_DIR = RESULTS_DIR / "selected_features"
 
 CORRELATION_THRESHOLD = 0.95

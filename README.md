@@ -8,7 +8,8 @@ The pipeline covers:
 - cleaning the data and creating a binary benign/attack label;
 - selecting a smaller feature set;
 - training and evaluating binary classifiers;
-- running an additional multiclass attack-type comparison.
+- running an additional multiclass attack-type comparison;
+- testing binary-model robustness with a complete source file held out.
 
 ## Dataset
 
@@ -74,7 +75,8 @@ Note that `imbalanced-learn` is installed under that package name, but imported 
     |-- 04_model_training.py
     |-- 05_evaluation_results.py
     |-- 06_run_full_pipeline.py
-    `-- 07_multiclass_comparison.py
+    |-- 07_multiclass_comparison.py
+    `-- 08_file_holdout_robustness.py
 ```
 
 ## Running the Binary Pipeline
@@ -110,6 +112,22 @@ This trains multiclass versions of:
 - Random Forest;
 - Random Forest with class weighting;
 - XGBoost.
+
+## Running the File-Holdout Robustness Test
+
+The file-holdout script reads the original CSV files directly from `data/raw/`. It trains on all source files except the configured holdout file, then evaluates on that complete unseen file:
+
+```powershell
+python .\src\08_file_holdout_robustness.py
+```
+
+By default, the held-out file is:
+
+```text
+Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv
+```
+
+The filename can be changed with `FILE_HOLDOUT_FILENAME` in `src/config.py`.
 
 ## Script Notes
 
@@ -194,6 +212,18 @@ results/multiclass_models/
 reports/07_multiclass_comparison/
 ```
 
+### 08 File-Holdout Robustness
+
+This stage provides a stricter binary generalization test than a random train/test split. It keeps one complete CICIDS2017 capture file out of training, trains Random Forest and XGBoost on the remaining files, and evaluates both models only on the unseen file.
+
+It reports accuracy, precision, recall, F1-score, and PR-AUC, together with the training and test sample counts.
+
+Main output:
+
+```text
+reports/08_file_holdout_robustness/file_holdout_robustness_results.csv
+```
+
 ## Experiment Design
 
 The binary experiments compare four main settings:
@@ -206,6 +236,8 @@ The binary experiments compare four main settings:
 ```
 
 The multiclass extension focuses on Random Forest and XGBoost because these were the strongest model families in the binary experiments.
+
+The file-holdout extension uses source-file membership instead of a random split to measure robustness to traffic from a separate capture. The default DDoS holdout therefore tests both cross-file and DDoS generalization.
 
 ## Metrics
 
@@ -240,6 +272,7 @@ The main reproducibility settings are defined in `src/config.py`:
 ```text
 RANDOM_STATE = 42
 TEST_SIZE = 0.2
+FILE_HOLDOUT_FILENAME = "Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv"
 ```
 
 Small differences can still occur across machines because Random Forest and XGBoost use parallel training.
@@ -255,6 +288,7 @@ reports/03_feature_selection/
 reports/04_model_training/
 reports/05_evaluation_results/
 reports/07_multiclass_comparison/
+reports/08_file_holdout_robustness/
 results/selected_features/
 results/metrics/
 results/multiclass_metrics/
@@ -273,3 +307,4 @@ These outputs include selected feature tables, metrics, confusion matrices, figu
 - Scaling is fitted on the training data only.
 - SMOTE is applied inside the training pipeline only.
 - The test set is held out until final evaluation.
+- Script `08` uses `source_file` only to create the file-based training and test partitions; it is not used as a model feature.
